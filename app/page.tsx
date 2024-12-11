@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAuth } from '../app/contexts/AuthContext'
+import { useAuth } from './contexts/AuthContext'
 import { ChatWindow } from './components/Chat/ChatWindow'
 import LoginForm from './components/auth/LoginForm'
 import RegisterForm from './components/auth/RegisterForm'
