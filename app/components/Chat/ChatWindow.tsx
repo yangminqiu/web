@@ -6,6 +6,7 @@ import { db } from '@/app/utils/firebase'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ChatInterface from '../ChatInterface'
 
+// 定义消息类型
 interface ChatMessage {
   content: string
   isUser: boolean
@@ -14,12 +15,13 @@ interface ChatMessage {
   userId: string
 }
 
+// 定义组件 Props 类型
 interface ChatWindowProps {
   onNeedAuth: () => void
   isLoggedIn: boolean
 }
 
-export const ChatWindow = ({ onNeedAuth, isLoggedIn }: ChatWindowProps) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ onNeedAuth, isLoggedIn }) => {
   const { user } = useAuth()
   const [messages, setMessages] = useState<ChatMessage[]>([{
     content: "你好！我是你的AI助手，有什么我可以帮你的吗？",
@@ -29,7 +31,6 @@ export const ChatWindow = ({ onNeedAuth, isLoggedIn }: ChatWindowProps) => {
     userId: 'system'
   }])
 
-  // 加载历史消息
   useEffect(() => {
     if (!user) return
 
@@ -46,21 +47,6 @@ export const ChatWindow = ({ onNeedAuth, isLoggedIn }: ChatWindowProps) => {
 
     return () => unsubscribe()
   }, [user])
-
-  // 保存消息到 Firestore
-  const saveMessage = async (message: ChatMessage) => {
-    if (!user) return
-
-    try {
-      const messagesRef = collection(db, `users/${user.uid}/messages`)
-      await addDoc(messagesRef, {
-        ...message,
-        timestamp: serverTimestamp()
-      })
-    } catch (error) {
-      console.error('Error saving message:', error)
-    }
-  }
 
   const handleNewMessage = async (content: string): Promise<void> => {
     if (!isLoggedIn) {
@@ -80,9 +66,7 @@ export const ChatWindow = ({ onNeedAuth, isLoggedIn }: ChatWindowProps) => {
         userId: user.uid
       }
 
-      // 保存用户消息并更新界面
       setMessages(prev => [userMessage, ...prev])
-      await saveMessage(userMessage)
 
       // 调用 AI API
       const response = await fetch('/api/chat', {
@@ -116,7 +100,6 @@ export const ChatWindow = ({ onNeedAuth, isLoggedIn }: ChatWindowProps) => {
         userId: 'ai'
       }
 
-      await saveMessage(aiMessage)
       setMessages(prev => [aiMessage, ...prev])
 
     } catch (error) {
@@ -139,4 +122,6 @@ export const ChatWindow = ({ onNeedAuth, isLoggedIn }: ChatWindowProps) => {
       />
     </div>
   )
-} 
+}
+
+export default ChatWindow 
