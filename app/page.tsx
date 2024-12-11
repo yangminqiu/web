@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useAuth } from './contexts/AuthContext'
-import { ChatWindow } from './components/Chat/ChatWindow'
+import ChatWindow from './components/Chat/ChatWindow'
 import LoginForm from './components/auth/LoginForm'
 import RegisterForm from './components/auth/RegisterForm'
 import Navbar from './components/Navbar'

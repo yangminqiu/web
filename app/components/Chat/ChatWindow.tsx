@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react'
 import { collection, query, orderBy, addDoc, serverTimestamp, onSnapshot } from 'firebase/firestore'
-import { db } from '@/app/utils/firebase'
-import { useAuth } from '@/app/contexts/AuthContext'
+import { db } from '../../utils/firebase'
+import { useAuth } from '../../contexts/AuthContext'
 import ChatInterface from '../ChatInterface'
 
 // 定义消息类型
