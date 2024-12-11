@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import { useAuth } from '@/app/contexts/AuthContext'
-import { auth } from '@/app/utils/firebase'
+import { useAuth } from '../contexts/AuthContext'
+import { auth } from '../utils/firebase'
 
 interface NavbarProps {
   onLogin: () => void
