@@ -32,7 +32,7 @@ const MessageBubble = ({ message }: MessageProps) => {
             : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
         }`}
       >
-        <div className="whitespace-pre-wrap">
+        <div className="whitespace-pre-wrap text-sm">
           {message.content}
         </div>
         <time className="text-xs opacity-60 mt-1 block">
