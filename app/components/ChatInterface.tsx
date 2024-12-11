@@ -1,83 +1,60 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { MessageBubble, SendMessage } from '.'
 import { chatWithAI } from '@/app/utils/api'
 
 interface Message {
   content: string
   isUser: boolean
-  timestamp: Date
   role: string
 }
 
 const ChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>(() => {
-    const savedMessages = localStorage.getItem('chatMessages')
-    if (savedMessages) {
-      const parsedMessages = JSON.parse(savedMessages)
-      return parsedMessages.map((msg: any) => ({
-        ...msg,
-        timestamp: new Date(msg.timestamp)
-      }))
-    }
-    return [{
-      content: "你好！我是你的AI助手，有什么我可以帮你的吗？",
-      isUser: false,
-      timestamp: new Date(),
-      role: "assistant"
-    }]
-  })
+  const [messages, setMessages] = useState<Message[]>([{
+    content: "你好！我是你的AI助手，有什么我可以帮你的吗？",
+    isUser: false,
+    role: "assistant"
+  }])
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    localStorage.setItem('chatMessages', JSON.stringify(messages))
-  }, [messages])
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    if (!isLoading) {
-      inputRef.current?.focus()
-    }
-  }, [messages, isLoading])
 
   const handleSendMessage = async (message: string) => {
-    const userMessage = {
-      content: message,
-      isUser: true,
-      timestamp: new Date(),
-      role: "user"
-    }
-    setMessages(prev => [...prev, userMessage])
-    
-    setIsLoading(true)
     try {
+      // 添加用户消息
+      const userMessage = {
+        content: message,
+        isUser: true,
+        role: "user"
+      }
+      setMessages(prev => [...prev, userMessage])
+      setIsLoading(true)
+
+      // 准备 API 消息
       const apiMessages = messages.map(msg => ({
         role: msg.role,
         content: msg.content
       }))
       apiMessages.push({ role: "user", content: message })
 
+      // 获取 AI 响应
       const aiResponse = await chatWithAI(apiMessages)
       
+      // 添加 AI 响应
       setMessages(prev => [...prev, {
-        content: aiResponse || "抱歉，我现在无法回答这个问题",
+        content: aiResponse,
         isUser: false,
-        timestamp: new Date(),
         role: "assistant"
       }])
     } catch (error) {
-      console.error('Error:', error)
       setMessages(prev => [...prev, {
-        content: "抱歉，发生了一些错误，请稍后重试。",
+        content: "抱歉，发生了错误，请稍后重试。",
         isUser: false,
-        timestamp: new Date(),
         role: "assistant"
       }])
     } finally {
       setIsLoading(false)
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
@@ -101,7 +78,6 @@ const ChatInterface = () => {
         <SendMessage 
           onSend={handleSendMessage} 
           isDisabled={isLoading}
-          inputRef={inputRef}
         />
       </div>
     </div>

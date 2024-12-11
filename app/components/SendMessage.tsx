@@ -5,10 +5,9 @@ import React, { useState } from 'react'
 interface SendMessageProps {
   onSend: (message: string) => void
   isDisabled?: boolean
-  inputRef: React.RefObject<HTMLInputElement | null>
 }
 
-const SendMessage = ({ onSend, isDisabled, inputRef }: SendMessageProps) => {
+const SendMessage = ({ onSend, isDisabled }: SendMessageProps) => {
   const [message, setMessage] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -23,7 +22,6 @@ const SendMessage = ({ onSend, isDisabled, inputRef }: SendMessageProps) => {
     <form onSubmit={handleSubmit} className="p-4">
       <div className="flex gap-4 max-w-3xl mx-auto">
         <input
-          ref={inputRef}
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}

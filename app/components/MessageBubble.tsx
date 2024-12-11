@@ -6,23 +6,11 @@ interface MessageProps {
   message: {
     content: string
     isUser: boolean
-    timestamp: Date
     role: string
   }
 }
 
 const MessageBubble = ({ message }: MessageProps) => {
-  const formatTime = (timestamp: Date) => {
-    try {
-      if (timestamp instanceof Date) {
-        return timestamp.toLocaleTimeString()
-      }
-      return new Date(timestamp).toLocaleTimeString()
-    } catch (error) {
-      return '时间未知'
-    }
-  }
-
   return (
     <div className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
       <div
@@ -35,9 +23,6 @@ const MessageBubble = ({ message }: MessageProps) => {
         <div className="whitespace-pre-wrap text-sm">
           {message.content}
         </div>
-        <time className="text-xs opacity-60 mt-1 block">
-          {formatTime(message.timestamp)}
-        </time>
       </div>
     </div>
   )
