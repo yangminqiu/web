@@ -1,16 +1,33 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import admin from 'firebase-admin'
 
+// 初始化 OpenAI 客户端
 const client = new OpenAI({
-  apiKey: 'sk-db4fcf4f31564ddb8a4d2320b1b092b0',
+  apiKey: process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY,
   baseURL: 'https://api.deepseek.com/v1'
 })
+
+// 初始化 Firebase Admin
+if (!admin.apps.length) {
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+      })
+    })
+  } catch (error) {
+    console.error('Firebase admin initialization error:', error)
+  }
+}
 
 export async function POST(request: Request) {
   try {
     const { messages } = await request.json()
-    
-    // 调用 DeepSeek API
+    console.log('收到消息:', messages)
+
     const response = await client.chat.completions.create({
       model: 'deepseek-chat',
       messages: [
@@ -25,13 +42,11 @@ export async function POST(request: Request) {
     })
 
     const content = response.choices[0]?.message?.content
-
     if (!content) {
       throw new Error('无效的响应')
     }
 
     return NextResponse.json({ content })
-
   } catch (error: any) {
     console.error('API 错误:', error)
     return NextResponse.json(
